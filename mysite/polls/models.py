@@ -14,7 +14,13 @@ class Question(models.Model):
 	def was_published_recently(self):
 		now = timezone.now()
 		return now - datetime.timedelta(days=1) <= self.pub_date <= now
+	"""Next 3 lines add attributes to the admin representation of this method"""
+	was_published_recently.admin_order_field = 'pub_date'
+	was_published_recently.boolean = True
+	was_published_recently.short_description = 'Published recently?'
 datetime.timedelta(days=1)
+
+
 
 @python_2_unicode_compatible
 class Choice(models.Model):

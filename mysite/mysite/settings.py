@@ -56,7 +56,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],#Added by me. DIRS is just a search path Django looks through to find templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

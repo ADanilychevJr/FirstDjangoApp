@@ -1,3 +1,6 @@
+{% load staticfiles %} <!--Loads the static template tag from the static files template library -->
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}"/><!--static template tag generate the absolute URL of the static file-->
+
 {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}
