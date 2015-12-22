@@ -3,6 +3,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views import generic
 from django.template import RequestContext, loader 
+from django.utils import timezone
 
 from .models import Question, Choice 
 
@@ -10,17 +11,20 @@ class IndexView(generic.ListView):
 	template_name = 'polls/index.html'
 	context_object_name = 'latest_question_list'
 	def get_queryset(self):
-		"""Return the last five published questions"""
-		return Questions.objects.order_by('-pub_date')[:5]
+		"""Return the last five published questions (except ones from future)"""
+		return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')
 
 class DetailView(generic.DetailView):
 	model = Question
 	template_name = 'polls/detail.html'
+	def get_queryset(self):
+		"""Exclude questions that aren't published yet"""
+		return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')
 
 class ResultsView(generic.DetailView):
 	model = Question
 	template_name = 'polls/results.html'
-	
+
 """ Old way of presenting views (without generic views)
 def index(request):
 	latest_question_list = Question.objects.order_by('-pub_date')[:5]
