@@ -1,10 +1,47 @@
 {% load staticfiles %} <!--Loads the static template tag from the static files template library -->
 <link rel="stylesheet" type="text/css" href="{% static 'polls/datastyle.css' %}"/><!--static template tag generate the absolute URL of the static file-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="
+https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
 
 <h1 id="title">Welcome to Poll Data!</h1>
+<canvas id="unsortedMedian" width='600' height='600'></canvas>
+<div id="stdout">Hellow</div>
+{% for major in all_data.all %}
+	<div id="major{{ forloop.counter}}"><p>{{major.major}}</p></div>
+{%endfor%}
+
 <script>
 	$('h1').click(function(){
 		$(this).css('color', '#'+(Math.random()*0xFFFFFF<<0).toString(16))
 	});
+$(document).ready(function(){
+	var medianBarData = {
+		labels: {{sorted_major|safe}},
+		rotated: true,
+		datasets: [ 
+			{
+				fillColor : "#6633FF",
+				strokeColor : "#794DFF",
+				data: {{ sorted_first }}
+			} ,
+			{
+				fillColor : "#CC33FF",
+				strokeColor : "#D24DFF",
+				data: {{sorted_med}}
+			} ,
+			
+			{
+				fillColor : "#FF33CC",
+				strokeColor : "#FF4DD2",
+				data: {{sorted_third}}
+			}
+		]
+	};
+	var medianCanvas = $('#unsortedMedian').get(0).getContext('2d');
+	new Chart(medianCanvas).Bar(medianBarData);
+	
+});
+	
+
 </script>

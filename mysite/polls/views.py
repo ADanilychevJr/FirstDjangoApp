@@ -4,8 +4,10 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 from django.template import RequestContext, loader 
 from django.utils import timezone
+import json
 
-from .models import Question, Choice 
+from .models import Question, Choice, Major
+from utils import utils
 
 class IndexView(generic.ListView):
 	template_name = 'polls/index.html'
@@ -26,10 +28,22 @@ class ResultsView(generic.DetailView):
 	template_name = 'polls/results.html'
 
 def data(request):
+	full_majors = Major.objects.all()
+	sortedbymed = utils.get_salaries_sorted(10)
 	context = {
-		'data': list(range(20))
+		'all_data': full_majors,
+		'median' : utils.get_medians_unsorted(10),
+		'major' : utils.get_majors_unsorted(10),
+		'firstt' : utils.get25_unsorted(10),
+		'third' : utils.get75_unsorted(10),
+		'sorted_major' : utils.get_majors_sorted(10),
+		'sorted_first' : sortedbymed[0],
+		'sorted_med' : sortedbymed[1],
+		'sorted_third' : sortedbymed[2]
 	}
 	return render(request, 'polls/data.html', context)
+
+
 
 def get_queryset(self):
 	return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')
