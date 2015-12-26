@@ -25,6 +25,15 @@ class ResultsView(generic.DetailView):
 	model = Question
 	template_name = 'polls/results.html'
 
+def data(request):
+	context = {
+		'data': list(range(20))
+	}
+	return render(request, 'polls/data.html', context)
+
+def get_queryset(self):
+	return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')
+
 """ Old way of presenting views (without generic views)
 def index(request):
 	latest_question_list = Question.objects.order_by('-pub_date')[:5]

@@ -1,0 +1,10 @@
+{% load staticfiles %} <!--Loads the static template tag from the static files template library -->
+<link rel="stylesheet" type="text/css" href="{% static 'polls/datastyle.css' %}"/><!--static template tag generate the absolute URL of the static file-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<h1 id="title">Welcome to Poll Data!</h1>
+<script>
+	$('h1').click(function(){
+		$(this).css('color', '#'+(Math.random()*0xFFFFFF<<0).toString(16))
+	});
+</script>
