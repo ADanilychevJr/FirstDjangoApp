@@ -29,17 +29,15 @@ class ResultsView(generic.DetailView):
 
 def data(request):
 	full_majors = Major.objects.all()
-	sortedbymed = utils.get_salaries_sorted(10)
+	sortedbymed = utils.get_salaries_sorted(170)
 	context = {
 		'all_data': full_majors,
-		'median' : utils.get_medians_unsorted(10),
 		'major' : utils.get_majors_unsorted(10),
-		'firstt' : utils.get25_unsorted(10),
-		'third' : utils.get75_unsorted(10),
-		'sorted_major' : utils.get_majors_sorted(10),
+		'sorted_major' : utils.get_majors_sorted(170),
 		'sorted_first' : sortedbymed[0],
 		'sorted_med' : sortedbymed[1],
-		'sorted_third' : sortedbymed[2]
+		'sorted_third' : sortedbymed[2],
+
 	}
 	return render(request, 'polls/data.html', context)
 

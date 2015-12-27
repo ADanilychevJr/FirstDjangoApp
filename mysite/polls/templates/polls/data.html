@@ -5,43 +5,130 @@
 https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
 
 <h1 id="title">Welcome to Poll Data!</h1>
-<canvas id="unsortedMedian" width='600' height='600'></canvas>
-<div id="stdout">Hellow</div>
+
+<button id="barChartToggleButton">Click to toggle chart rotation</button></br>
+<canvas id="unsortedMedian" width='600' height='600'></canvas></br>
+<button id="randPlot1Button">Toggle next chart</button>
+<h3>This is a graph of random normal-dist sampling</h3></br>
+<canvas id="randPlot1" width='900' height = '300'></canvas>
+
 {% for major in all_data.all %}
 	<div id="major{{ forloop.counter}}"><p>{{major.major}}</p></div>
 {%endfor%}
 
 <script>
+var num_majors_barchart = 10;
+var counter = 0;
+var counter2 = 11;
+var sorted_major = {{sorted_major|safe}}
+var sorted_first = {{sorted_first}}
+var sorted_med = {{sorted_med}}
+var sorted_third  = {{sorted_third}}
 	$('h1').click(function(){
 		$(this).css('color', '#'+(Math.random()*0xFFFFFF<<0).toString(16))
 	});
 $(document).ready(function(){
-	var medianBarData = {
-		labels: {{sorted_major|safe}},
+
+	var medianCanvas = $('#unsortedMedian').get(0).getContext('2d');
+	barChart = new Chart(medianCanvas).Bar(medianBarData);
+	$('#barChartToggleButton').one("click", startBarChartInterval);
+	var randCanvas1 = $('#randPlot1').get(0).getContext('2d');
+	randPlot1 = new Chart(randCanvas1).RandLine1(randData1,randOptions);
+	$('#randPlot1Button').one("click", startRand1);
+	
+});
+var randData1 = {
+	labels: [1,2,3,4,5,6,7,8,9,10],
+	datasets: [{
+		fillColor: "rgba(151,187,205,0.2)",
+              strokeColor: "rgba(151,187,205,1)",
+              pointColor: "rgba(151,187,205,1)",
+              pointStrokeColor: "#fff",
+              data: [28, 48, 40, 19, 86, 27, 90,0,100,0,100]
+	}
+	]
+};
+
+randOptions = {scaleOverride: true, 
+	scaleStartValue: 0, 
+	scaleStepWidth: 20, 
+	scaleSteps: 5};
+
+var medianBarData = {
+		labels: sorted_major.slice(0,num_majors_barchart),
 		rotated: true,
 		datasets: [ 
 			{
+				label: "1st quartile",
 				fillColor : "#6633FF",
 				strokeColor : "#794DFF",
-				data: {{ sorted_first }}
+				data: sorted_first.slice(0, num_majors_barchart) 
 			} ,
 			{
+				label : "Median",
 				fillColor : "#CC33FF",
 				strokeColor : "#D24DFF",
-				data: {{sorted_med}}
+				data: sorted_med.slice(0,num_majors_barchart)
 			} ,
-			
 			{
+				label : "3rd quartile",
 				fillColor : "#FF33CC",
 				strokeColor : "#FF4DD2",
-				data: {{sorted_third}}
+				data: sorted_third.slice(0, num_majors_barchart)
 			}
 		]
 	};
-	var medianCanvas = $('#unsortedMedian').get(0).getContext('2d');
-	new Chart(medianCanvas).Bar(medianBarData);
+function updateBarChart(){
 	
+	barChart.addData([sorted_first[counter+num_majors_barchart],
+		sorted_med[counter+num_majors_barchart],
+		sorted_third[counter+num_majors_barchart]], 
+		sorted_major[counter+num_majors_barchart]);
+	barChart.removeData();
+	counter = counter + 1;
+	barChart.update();
+	console.log(barChart);
+	console.log(counter);
+};
+
+function stopBarChartInterval(){
+	clearInterval(barChartInterval);
+	$(this).one("click", startBarChartInterval);
+};
+
+function startBarChartInterval(){
+	barChartInterval = setInterval(updateBarChart, 3000);
+	$(this).one("click", stopBarChartInterval);
+};
+
+function updateRand1(){
+	var newnum = Math.random() * 100;
+	for (var i = 0; i < 5; i++){
+		newnum = newnum + (Math.random() * 100);
+	}
+	newnum = newnum / 6;
+	randPlot1.addData([newnum], counter2++);
+	randPlot1.removeData();
+};
+
+function startRand1(){
+	randInterval = setInterval(updateRand1, 300);
+	$(this).one("click", stopRand1);
+};
+
+function stopRand1(){
+	clearInterval(randInterval);
+	$(this).one("click", startRand1);
+};
+
+Chart.types.Line.extend({
+	name: "RandLine1",
+	draw: function (){
+		Chart.types.Line.prototype.draw.apply(this, arguments);
+		var ctx = this.chart.ctx;
+		ctx.save();
+		ctx.restore();
+	}
 });
-	
 
 </script>
